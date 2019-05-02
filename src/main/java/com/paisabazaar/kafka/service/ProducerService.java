@@ -1,15 +1,14 @@
 package com.paisabazaar.kafka.service;
 
 
-import com.paisabazaar.kafka.bean.User;
+import com.paisabazaar.kafka.bean.Producer;
 
 import java.util.List;
 
 public interface ProducerService {
-	public void createUser(User user);
-	public List<User> getUser();
-	public User findById(int id);
-	public User update(User user, int id);
-	public void deleteUserById(int id);
-	public User updatePartially(User user, int id);
+	public void createProducer(Producer producer);
+	public List<Producer> getProducer();
+	public Producer findById(int id);
+	public Producer update(Producer producer, int id);
+	public void deleteProducerById(int id);
 }
