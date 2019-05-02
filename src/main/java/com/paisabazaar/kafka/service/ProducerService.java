@@ -6,9 +6,9 @@ import com.paisabazaar.kafka.bean.Producer;
 import java.util.List;
 
 public interface ProducerService {
-	public void createProducer(Producer producer);
-	public List<Producer> getProducer();
-	public Producer findById(int id);
-	public Producer update(Producer producer, int id);
-	public void deleteProducerById(int id);
+	void createProducer(Producer producer);
+	List<Producer> getProducer();
+	Producer findById(String id);
+	Producer update(Producer producer, String id);
+	void deleteProducerById(String id);
 }

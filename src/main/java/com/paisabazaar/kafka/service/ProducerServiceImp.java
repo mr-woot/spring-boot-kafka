@@ -31,7 +31,7 @@ public class ProducerServiceImp implements ProducerService{
 	}
 
 	@Override
-	public Producer update(Producer Producer,String id) {
+	public Producer update(Producer Producer, String id) {
 		return producerDao.update(Producer, id);
 	}
 
