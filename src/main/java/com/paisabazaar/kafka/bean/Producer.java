@@ -1,10 +1,13 @@
 package com.paisabazaar.kafka.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 
 
 @Entity
@@ -29,14 +32,17 @@ public class Producer {
 
     private Long expiry;
 
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, updatable = false)
-    private Timestamp createdAt;
+    private Date createdAt;
 
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Timestamp updatedAt;
+    private Date updatedAt;
 
-    public Producer(String producerId, String buName, String type, String topic, String purpose, int retention, Long expiry) {
-        this.producerId = producerId;
+    public Producer(String buName, String type, String topic, String purpose, int retention, Long expiry) {
         this.buName = buName;
         this.type = type;
         this.topic = topic;
@@ -103,11 +109,11 @@ public class Producer {
         this.expiry = expiry;
     }
 
-    public Timestamp getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public Timestamp getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 

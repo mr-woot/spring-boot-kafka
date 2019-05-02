@@ -6,7 +6,7 @@ import com.paisabazaar.kafka.bean.Producer;
 import java.util.List;
 
 public interface ProducerDao {
-	void createProducer(Producer producer);
+	Producer createProducer(Producer producer);
 	List<Producer> getProducer();
 	Producer findById(String id);
 	Producer update(Producer producer, String id);

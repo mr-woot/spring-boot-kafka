@@ -7,10 +7,14 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class ProducerDaoImp implements ProducerDao{
@@ -18,9 +22,11 @@ public class ProducerDaoImp implements ProducerDao{
 	private SessionFactory sessionFactory;
 
 	@Override
-	public void createProducer(Producer producer) {
+	public Producer createProducer(Producer producer) {
 		 Session session = sessionFactory.getCurrentSession();
+		 producer.setProducerId(UUID.randomUUID().toString());
 		 session.save(producer);
+		 return producer;
 	}
 
 	@Override
@@ -36,14 +42,18 @@ public class ProducerDaoImp implements ProducerDao{
 
 	@Override
 	public Producer findById(String id) {
-		Session session = sessionFactory.getCurrentSession();
-		// Create CriteriaBuilder
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Producer> criteria = builder.createQuery(Producer.class);
-		Root<Producer> root = criteria.from(Producer.class);
-		criteria.select(root).where(builder.equal(root.get("id"), id));
-		Query<Producer> query = session.createQuery(criteria);
-		return query.getSingleResult();
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			// Create CriteriaBuilder
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<Producer> criteria = builder.createQuery(Producer.class);
+			Root<Producer> root = criteria.from(Producer.class);
+			criteria.select(root).where(builder.equal(root.get("producerId"), id));
+			Query<Producer> query = session.createQuery(criteria);
+			return query.getSingleResult();
+		} catch (NoResultException nr) {
+			return null;
+		}
 	}
 
 	@Override

@@ -22,8 +22,8 @@ public class ProducerServiceImp implements ProducerService{
 		return producerDao.findById(id);
 	}
 
-	public void createProducer(Producer Producer) {
-		producerDao.createProducer(Producer);
+	public Producer createProducer(Producer Producer) {
+		return producerDao.createProducer(Producer);
 	}
 
 	public void deleteProducerById(String id) {
