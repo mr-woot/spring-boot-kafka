@@ -3,12 +3,9 @@ package com.paisabazaar.kafka.controller;
 import com.paisabazaar.kafka.bean.Producer;
 import com.paisabazaar.kafka.service.ProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -18,37 +15,37 @@ public class ProducerController {
     @Autowired
     ProducerService producerService;
 
-    @GetMapping(value = "/{id}", headers = "Accept=application/json")
-    public ResponseEntity<Producer> getProducerById(@PathVariable("id") String id) {
-        System.out.println("Fetching Producer with id " + id);
-        Producer producer = producerService.findById(id);
-        if (producer == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    @GetMapping(headers = "Accept=application/json")
+    public ResponseEntity<?> getProducer(@RequestParam(value = "id", defaultValue = "") String id) {
+        if (id.equals("")) {
+            List<Producer> producers = producerService.getProducer();
+            return new ResponseEntity<List<Producer>>(producers, HttpStatus.OK);
+        } else {
+            System.out.println("Fetching Producer with id " + id);
+            Producer producer = producerService.findById(id);
+            if (producer == null) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(producer, HttpStatus.OK);
         }
-        return new ResponseEntity<>(producer, HttpStatus.OK);
+
     }
 
     @PostMapping(headers = "Accept=application/json")
-    public ResponseEntity<Producer> createProducer(@RequestBody Producer producer, UriComponentsBuilder ucBuilder) {
+    public ResponseEntity<Producer> createProducer(@RequestBody Producer producer) {
         System.out.println("Creating Producer " + producer.getProducerId());
         Producer pr = producerService.createProducer(producer);
         return new ResponseEntity<>(pr, HttpStatus.CREATED);
     }
 
-    @GetMapping(headers = "Accept=application/json")
-    public ResponseEntity<List> getProducer() {
-        List<Producer> tasks = producerService.getProducer();
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
-    }
-
     @PutMapping(headers = "Accept=application/json")
-    public ResponseEntity<String> updateProducer(@RequestBody Producer currentProducer) {
-        Producer producer = producerService.findById(currentProducer.getProducerId());
+    public ResponseEntity<Producer> updateProducer(@RequestParam String id, @RequestBody Producer currentProducer) {
+        Producer producer = producerService.findById(id);
         if (producer == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        producerService.update(currentProducer, currentProducer.getProducerId());
-        return new ResponseEntity<>(HttpStatus.OK);
+        Producer x = producerService.update(currentProducer, id);
+        return new ResponseEntity<>(x, HttpStatus.OK);
     }
 
     @DeleteMapping(headers = "Accept=application/json")

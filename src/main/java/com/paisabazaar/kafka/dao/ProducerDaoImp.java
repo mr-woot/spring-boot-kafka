@@ -1,76 +1,70 @@
 package com.paisabazaar.kafka.dao;
 
 import com.paisabazaar.kafka.bean.Producer;
+import com.paisabazaar.kafka.utils.ApplicationUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 @Repository
-public class ProducerDaoImp implements ProducerDao{
-	@Autowired
-	private SessionFactory sessionFactory;
+public class ProducerDaoImp implements ProducerDao {
 
-	@Override
-	public Producer createProducer(Producer producer) {
-		 Session session = sessionFactory.getCurrentSession();
-		 producer.setProducerId(UUID.randomUUID().toString());
-		 session.save(producer);
-		 return producer;
-	}
+    @Autowired
+    private SessionFactory sessionFactory;
 
-	@Override
-	public List<Producer> getProducer() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Producer> criteria = builder.createQuery(Producer.class);
-		Root<Producer> root = criteria.from(Producer.class);
-		criteria.select(root);
-		Query<Producer> query = session.createQuery(criteria);
-		return query.getResultList();
-	}
+    @Autowired
+    private ApplicationUtils utils;
 
-	@Override
-	public Producer findById(String id) {
-		try {
-			Session session = sessionFactory.getCurrentSession();
-			// Create CriteriaBuilder
-			CriteriaBuilder builder = session.getCriteriaBuilder();
-			CriteriaQuery<Producer> criteria = builder.createQuery(Producer.class);
-			Root<Producer> root = criteria.from(Producer.class);
-			criteria.select(root).where(builder.equal(root.get("producerId"), id));
-			Query<Producer> query = session.createQuery(criteria);
-			return query.getSingleResult();
-		} catch (NoResultException nr) {
-			return null;
-		}
-	}
+    @Override
+    public Producer createProducer(Producer producer) {
+        producer.setProducerId(UUID.randomUUID().toString());
+        sessionFactory.getCurrentSession().save(producer);
+        return producer;
+    }
 
-	@Override
-	public Producer update(Producer val, String id) {
-		// ## Need to change it using CriteriaBuilder method.
-		Session session = sessionFactory.getCurrentSession();
-		Producer producer = session.get(Producer.class, id);
-		// Set producer values here.
-		// producer.setBuName(val.getBuName());
-		session.update(producer);
-		return producer;
-	}
+    @Override
+    public List<Producer> getProducer() {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Producer> cq = cb.createQuery(Producer.class);
+        Root<Producer> root = cq.from(Producer.class);
+        cq.select(root);
+        Query<Producer> query = session.createQuery(cq);
+        return query.getResultList();
+    }
 
-	public void delete(String id) {
-		Session session = sessionFactory.getCurrentSession();
-		Producer producer = findById(id);
-		session.delete(producer);
-	}
+    @Override
+    public Producer findById(String id) {
+        return sessionFactory.getCurrentSession().get(Producer.class, id);
+    }
+
+    @Override
+    public Producer update(Producer currentProducer, String id) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaUpdate<Producer> criteria = builder.createCriteriaUpdate(Producer.class);
+        Root<Producer> root = criteria.from(Producer.class);
+        criteria.set(root.get("updatedAt"), new Date());
+        // criteria.set("", "");
+        criteria.where(builder.equal(root.get("producerId"), id));
+        session.createQuery(criteria).executeUpdate();
+        return currentProducer;
+    }
+
+    public void delete(String id) {
+        Session session = sessionFactory.getCurrentSession();
+        Producer book = session.byId(Producer.class).load(id);
+        session.delete(book);
+    }
 
 }

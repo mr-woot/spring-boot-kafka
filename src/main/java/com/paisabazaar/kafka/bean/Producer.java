@@ -1,19 +1,24 @@
 package com.paisabazaar.kafka.bean;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
 
 @Entity
 @Table(name = "producer")
+@JsonAutoDetect
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Producer {
+@DynamicInsert(true)
+@DynamicUpdate(true)
+public class Producer implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -52,6 +57,9 @@ public class Producer {
     }
 
     // Getters and Setters
+
+    public Producer() {
+    }
 
     public String getProducerId() {
         return producerId;
@@ -119,5 +127,20 @@ public class Producer {
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "=====> Producer{" +
+                "producerId='" + producerId + '\'' +
+                ", buName='" + buName + '\'' +
+                ", type='" + type + '\'' +
+                ", topic='" + topic + '\'' +
+                ", purpose='" + purpose + '\'' +
+                ", retention=" + retention +
+                ", expiry=" + expiry +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }
